@@ -1,33 +1,57 @@
 name: Import Code from ZIP
 
 on:
-  workflow_dispatch:  # 需要手动点击运行
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   import-code:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. 克隆当前仓库
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      # 2. 下载你的 ZIP 压缩包
       - name: Download ZIP file
         run: |
           curl -L "https://oss-cn-foshan.midea.com/hubble-user-file/static.zip?AWSAccessKeyId=jnlujubta9kgq65nnvavwkvp&Expires=1782272801&Signature=hi6sHIvT6tFLgFmSPCG9JJUBeAA%3D" -o code.zip
           echo "下载完成，文件大小："
           ls -lh code.zip
       
-      # 3. 解压 ZIP 文件（覆盖 README.md）
-      - name: Extract ZIP
+      - name: Extract ZIP (去掉顶层文件夹)
         run: |
-          unzip -o code.zip -d ./
-          rm code.zip
+          # 先解压到临时目录
+          unzip -o code.zip -d temp/
+          
+          # 查看 temp 里有什么
+          echo "temp 目录内容："
+          ls -la temp/
+          
+          # 如果 temp 里只有一个文件夹，把它的内容移到根目录
+          if [ $(ls -1 temp/ | wc -l) -eq 1 ] && [ -d "temp/$(ls temp/)" ]; then
+            # 获取那个唯一的文件夹名
+            FOLDER_NAME=$(ls temp/)
+            echo "检测到顶层文件夹：$FOLDER_NAME，将其内容移到根目录"
+            # 把文件夹里的所有内容（包括隐藏文件）移到根目录
+            mv temp/$FOLDER_NAME/* ./ 2>/dev/null || true
+            mv temp/$FOLDER_NAME/.* ./ 2>/dev/null || true
+          else
+            # 如果 temp 里直接就是文件，直接移动
+            echo "没有顶层文件夹，直接移动所有文件"
+            mv temp/* ./ 2>/dev/null || true
+            mv temp/.* ./ 2>/dev/null || true
+          fi
+          
+          # 清理
+          rm -rf temp code.zip
+          
           echo "解压完成，当前目录文件："
           ls -la
       
-      # 4. 提交并推送到仓库
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
