@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7B2FFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <polygon points="10,30 22,10 34,30 22,50" fill="url(#logoGrad)" opacity="0.9"/>
+  <polygon points="18,30 30,10 42,30 30,50" fill="url(#logoGrad)" opacity="0.6"/>
+  <text x="52" y="22" font-family="Orbitron,Arial,sans-serif" font-size="16" font-weight="700" fill="#00D4FF" letter-spacing="2">XINLING</text>
+  <text x="52" y="42" font-family="Arial,sans-serif" font-size="11" fill="#8892A4" letter-spacing="4">芯 灵 科 技</text>
+</svg>
